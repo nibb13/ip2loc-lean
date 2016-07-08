@@ -32,11 +32,23 @@ init () {
 
 parseOptions () {
 
-    while getopts "hscrClzt" opt
+    while getopts "uhscrClzt" opt
     do
 	case $opt in
 	    h)
 		usage;
+		exit 0;
+		;;
+	    u)
+		$(updateDB);
+		if [ $? -eq 0 ]; then
+		    createIndex 1 1;
+		    createIndex 1 2;
+		    flushTemp;
+		    setCronjob;
+		else
+    		    $PRINT "Autoupdate failed." >&2;
+		fi
 		exit 0;
 		;;
 	    s)
@@ -68,7 +80,7 @@ parseOptions () {
 
 usage () {
 
-    $PRINT "Usage: $0 [-scrClzth] <ip address>";
+    $PRINT "Usage: $0 [-scrClztuh] <ip address>";
     $PRINT;
     $PRINT "Getting geolocation info for supplied IP address.";
     $PRINT;
@@ -80,6 +92,7 @@ usage () {
     $PRINT_E "\t-l\tLocation, lat & lon (i.e. 32.242850 -110.946248)";
     $PRINT_E "\t-z\tZIP/Postal code (i.e. 85719)";
     $PRINT_E "\t-t\tUTC time zone (with DST supported) (i.e. -07:00)";
+    $PRINT_E "\t-u\tUpdate database (internal use)";
     $PRINT_E "\t-h\tUsage help";
     $PRINT;
 
@@ -224,20 +237,101 @@ downloadDB () {
 
 }
 
+updateDB () {
+
+    if [ ! "$CONF_DB_AUTOUPDATE" ]; then
+	$PRINT "No autoupdate set." >&2;
+	exit 1;
+    fi
+
+    mkdir "$DATA_DIR/tmp";
+    
+    if [ "$?" -ne 0 ]; then
+	$PRINT "Error creating $DATA_DIR/tmp directory. Exiting." >&2;
+	exit 1;
+    fi
+
+    ZIP_FILE=$(findDB "ZIP");
+    
+    if [ ! "$ZIP_FILE" ]; then
+	$PRINT "DB not found. Downloading..." >&2;
+	RESULT=$(downloadDB);
+	if [ "$?" -ne 0 ]; then
+	    $PRINT "Error while downloading:" >&2;
+	    $PRINT "$RESULT" >&2;
+	    exit 1;
+	else
+	    ZIP_FILE=$RESULT;
+	fi
+    fi
+    
+    if [ -f "$ZIP_FILE" ]; then
+    
+	$PRINT "Got zip file at $ZIP_FILE, unpacking..." >&2;
+	unzip "$ZIP_FILE" "$DB_FILE_BASENAME.CSV" -d "$DATA_DIR/tmp" >/dev/null 2>&1;
+	EXIT_CODE=0;
+	if [ "$?" -ne 0 ]; then
+	    $PRINT "Error unpacking $ZIP_FILE." >&2;
+	    EXIT_CODE=1;
+	fi
+	chmod 644 "$DATA_DIR/tmp/$DB_FILE_BASENAME.CSV";
+	rm "$ZIP_FILE";
+	if [ "$?" -ne 0 ]; then
+	    $PRINT "Error removing $ZIP_FILE." >&2
+	    EXIT_CODE=1;
+	fi
+	
+	$PRINT_EN "$ZIP_FILE";
+	exit $EXIT_CODE;
+	
+    fi;
+    
+}
+
 createIndex () {
+
+    if [ "$2" ]; then
+	DIR="tmp/";
+    fi
 
     if [ "$1" -eq 1 ]; then
 	DELIMITER="\"*,\"*";
-	IN_FILE=$DB_FILE;
-	OUT_FILE="$DATA_DIR/$DB_FILE_BASENAME.IDX";
+	IN_FILE="$DATA_DIR/$DIR$DB_FILE_BASENAME.CSV";
+	OUT_FILE="$DATA_DIR/$DIR$DB_FILE_BASENAME.IDX";
     elif [ "$1" -eq 2 ]; then
 	DELIMITER=" ";
-	IN_FILE="$DATA_DIR/$DB_FILE_BASENAME.IDX";
-	OUT_FILE="$DATA_DIR/$DB_FILE_BASENAME.ID2";
+	IN_FILE="$DATA_DIR/$DIR$DB_FILE_BASENAME.IDX";
+	OUT_FILE="$DATA_DIR/$DIR$DB_FILE_BASENAME.ID2";
     fi
     
     $CONF_AWK_BACKEND -F "$DELIMITER"  "BEGIN{NR=-1; totalBytes=0; prevBytes=0; } { prevBytes = totalBytes; totalBytes += length(\$0) + 1; gsub(/\"/, \"\"); if (NR % 100 == 0) { print \$1 \" \" prevBytes; }} END { print \$1 \" \" totalBytes; }" "$IN_FILE"  > "$OUT_FILE";
 
+}
+
+flushTemp () {
+
+    #TODO: make wait for other ip2loc-lean processes exit.
+
+    mv -f "$DATA_DIR/tmp/$DB_FILE_BASENAME.CSV" "$DATA_DIR/";
+    mv -f "$DATA_DIR/tmp/$DB_FILE_BASENAME.IDX" "$DATA_DIR/";
+    mv -f "$DATA_DIR/tmp/$DB_FILE_BASENAME.ID2" "$DATA_DIR/";
+    if [ "$DATA_DIR" ]; then
+	rm -rf "$DATA_DIR/tmp";
+    fi;
+
+}
+
+setCronjob () {
+    
+    RAND_DAY=$(awk 'BEGIN {srand(); print int(1 + rand() * 7)}');
+    CURR_CRONTAB=$(crontab -l 2>/dev/null | grep -v 'ip2loc-lean');
+    NEW_CRONTAB="0 0 $RAND_DAY * * ip2loc-lean.sh -u >/dev/null 2>&1\n";
+    if [ "$CURR_CRONTAB" ]; then
+	NEW_CRONTAB="$NEW_CRONTAB$CURR_CRONTAB\n";
+    fi
+    #TODO: get absolute path for ip2loc-lean.sh
+    $PRINT_EN "$NEW_CRONTAB" | crontab;
+    
 }
 
 prepend () {
@@ -260,34 +354,27 @@ fi
 
 . "$CONFIG_FILE";
 
+DB_FILE_BASENAME=$(getDBFile "$CONF_DB_CODE");
+
 parseOptions "$@";
 shift $((OPTIND-1));
 
 IP_ADDRESS=$1;
 
-DB_FILE_BASENAME=$(getDBFile "$CONF_DB_CODE");
 DB_FILE=$(findDB);
 
 if [ ! "$DB_FILE" ]; then
-
-    if [ "$CONF_DB_AUTOUPDATE" ]; then
     
-	ZIP_FILE=$(findDB "ZIP");
-	
-	if [ ! "$ZIP_FILE" ]; then
-    	    $PRINT "DB not found. Downloading..." >&2;
-    	    RESULT=$(downloadDB);
-    	    if [ "$?" -ne 0 ]; then
-    		$PRINT "Error while downloading:" >&2;
-    		$PRINT "$RESULT" >&2;
-	    else
-		ZIP_FILE=$RESULT;
-	    fi
-	fi
-	if [ -f "$ZIP_FILE" ]; then
-	    $PRINT "Got zip file at $ZIP_FILE, unpacking..." >&2;
-	    unzip "$ZIP_FILE" "$DB_FILE_BASENAME.CSV" -d "$DATA_DIR" >/dev/null 2>&1;
-	fi;
+    $PRINT "Downloading db" >&2;
+    
+    ZIP_FILE=$(updateDB);
+
+    if [ $? -eq 0 ]; then
+	$PRINT "Downloaded, creating index" >&2;
+	createIndex 1 1;
+	createIndex 2 1;
+	flushTemp;
+	setCronjob;
     else
         $PRINT "DB not found." >&2;
     fi
