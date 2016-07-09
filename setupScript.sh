@@ -309,7 +309,7 @@ elif [ "$CONF_CURL_PRESENT" ]; then
     
 elif [ "$CONF_WGET_PRESENT" ]; then
 
-    out_test 2 "Only wget is found, using it as http downloader.\n";
+    out_text 2 "Only wget is found, using it as http downloader.\n";
     CONF_HTTP_BACKEND="wget";
     
 else
