@@ -52,11 +52,16 @@ then place ip2loc-lean.sh into dir listed in $PATH (or add ip2loc-lean dir to $P
 
 ## Usage
 
-ip2loc-lean.sh [-scrClzthu] IP_ADDRESS
+ip2loc-lean.sh [-scrClztuh] IP_ADDRESS [OUT_FORMAT]
 
 ### IP_ADDRESS
 
 Currently only valid (no check in script) IPv4 addresses like 8.8.8.8
+
+### OUT_FORMAT
+
+empty (default) - fields delimited by ::  
+csv - fields delimited by , and embraced by "
 
 ### Options
 
@@ -69,8 +74,8 @@ Currently only valid (no check in script) IPv4 addresses like 8.8.8.8
 -l	Location, lat & lon (i.e. 32.242850 -110.946248)  
 -z	Zip/Postal code (i.e. 85719)  
 -t	UTC time zone (with DST supported) (i.e. -07:00)  
--h	Usage help  
--u	Update DB just now. Used internally via cronjob, but you can use it as well.
+-u	Update DB just now. Used internally via cronjob, but you can use it as well.  
+-h	Usage help
 
 ## Troubleshooting & caveats
 

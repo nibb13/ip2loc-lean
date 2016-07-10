@@ -80,9 +80,13 @@ parseOptions () {
 
 usage () {
 
-    $PRINT "Usage: $0 [-scrClztuh] <ip address>";
+    $PRINT "Usage: $0 [-scrClztuh] IP_ADDRESS [OUT_FORMAT]";
     $PRINT;
     $PRINT "Getting geolocation info for supplied IP address.";
+    $PRINT;
+    $PRINT "OUT_FORMAT can be:";
+    $PRINT_E "\t\tempty (default) - fields delimited by ::";
+    $PRINT_E "\t\tcsv - fields delimited by , and embraced by \"";
     $PRINT;
     $PRINT "Options:";
     $PRINT_E "\t-s\tTwo-character country code based on ISO 3166 (i.e. US)";
@@ -336,10 +340,20 @@ setCronjob () {
 
 prepend () {
 
+    PRE_BLOCK="";
+    DELIMITER="\"::\"";
+    POST_BLOCK="";
+
+    if [ "$OUT_FORMAT" = "csv" ]; then
+	PRE_BLOCK="\"\\\"\"";
+	DELIMITER="\",\"";
+	POST_BLOCK="\"\\\"\"";
+    fi
+
     if [ "$1" ]; then
-	$PRINT_EN "$2,$1";
+	$PRINT_EN "$PRE_BLOCK$2$POST_BLOCK$DELIMITER$1";
     else
-	$PRINT_EN "$2";
+	$PRINT_EN "$PRE_BLOCK$2$POST_BLOCK";
     fi
 
 }
@@ -360,6 +374,7 @@ parseOptions "$@";
 shift $((OPTIND-1));
 
 IP_ADDRESS=$1;
+OUT_FORMAT=$2;
 
 DB_FILE=$(findDB);
 
