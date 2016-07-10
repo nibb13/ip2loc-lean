@@ -96,19 +96,19 @@ Currently only valid (no check in script) IPv4 addresses like 8.8.8.8
 * 32 Mb RAM.
 
 **DB1LITE**, creating index: 0m 15.42s  
-Total time: 4m 28.22s (268.22s) per 1000 queries, Average value: 0.27s, Median value: 0.27s per query  
+Total time: 4m 28.22s (268.22s) per 1000 queries, Average value: **0.27s**, Median value: **0.27s** per query  
 
 **DB3LITE**, creating index: 7m 8.37s  
-Total time: 5m 12.69s (312.69s) per 1000 queries, Average value: 0.31s, Median value: 0.31s per query  
+Total time: 5m 12.69s (312.69s) per 1000 queries, Average value: **0.31s**, Median value: **0.31s** per query  
 
 **DB5LITE**, creating index: 8m 50.92s  
-Total time: 5m 15.19s (315.19s) per 1000 queries, Average value: 0.32s, Median value: 0.31s per query  
+Total time: 5m 15.19s (315.19s) per 1000 queries, Average value: **0.32s**, Median value: **0.31s** per query  
 
 **DB9LITE**, creating index: 9m 16.20s  
-Total time: 5m 35.07s (335.07s) per 1000 queries, Average value: 0.34s, Median value: 0.31s per query  
+Total time: 5m 35.07s (335.07s) per 1000 queries, Average value: **0.34s**, Median value: **0.31s** per query  
 
 **DB11LITE**, creating index: 13m 21.88s  
-Total time: 6m 22.76s (382.76s) per 1000 queries, Average value: 0.38s, Median value: 0.34s per query  
+Total time: 6m 22.76s (382.76s) per 1000 queries, Average value: **0.38s**, Median value: **0.34s** per query  
 
 ### Asus Transformer TF101 (Android tablet)
 
@@ -116,19 +116,54 @@ Total time: 6m 22.76s (382.76s) per 1000 queries, Average value: 0.38s, Median v
 * 1Gb RAM.
 
 **DB1LITE**, creating index: 0m 2.34s  
-Total time: 1m 14.80s (74.80s) per 1000 queries, Average value: 0.08s, Median value: 0.07s per query  
+Total time: 1m 14.80s (74.80s) per 1000 queries, Average value: **0.08s**, Median value: **0.07s** per query  
 
 **DB3LITE**, creating index: 1m 24.18s  
-Total time: 1m 54.57s (114.57s) per 1000 queries, Average value: 0.12s, Median value: 0.10s per query  
+Total time: 1m 54.57s (114.57s) per 1000 queries, Average value: **0.12s**, Median value: **0.10s** per query  
 
 **DB5LITE**, creating index: 1m 44.31s  
-Total time: 2m 27.41s (147.41s) per 1000 queries, Average value: 0.15s, Median value: 0.13s per query  
+Total time: 2m 27.41s (147.41s) per 1000 queries, Average value: **0.15s**, Median value: **0.13s** per query  
 
 **DB9LITE**, creating index: 1m 54.59s  
-Total time: 2m 38.98s (158.98s) per 1000 queries, Average value: 0.16s, Median value: 0.14s per query  
+Total time: 2m 38.98s (158.98s) per 1000 queries, Average value: **0.16s**, Median value: **0.14s** per query  
 
 **DB11LITE**, creating index: 2m 3.62s  
-Total time: 2m 51.69s (171.69s) per 1000 queries, Average value: 0.17s, Median value: 0.16s per query  
+Total time: 2m 51.69s (171.69s) per 1000 queries, Average value: **0.17s**, Median value: **0.16s** per query  
+
+### Just for fun
+
+### PC (Linux Mint 13 under VirtualBox, host: Windows XP SP3)
+
+* CPU: Intel(R) Pentium(R) 4 CPU 3.00GHz, 2060.28 BogoMIPS
+* 512 Mb RAM.
+
+**DB1LITE**, creating index: 0m 3.669s  
+Total time: 6m 51.36s (411.36s) per 1000 queries, Average value: **0.41s**, Median value: **0.39s** per query  
+
+**DB3LITE**, creating index: 1m 18.10s  
+Total time: 8m 49.33s (529.33s) per 1000 queries, Average value: **0.53s**, Median value: **0.51s** per query  
+
+**DB5LITE**, creating index: 1m 33.48s  
+Total time: 10m 29.28s (629.28s) per 1000 queries, Average value: **0.63s**, Median value: **0.61s** per query  
+
+**DB9LITE**, creating index: 1m 38.98s  
+Total time: 10m 42.33s (642.33s) per 1000 queries, Average value: **0.64s**, Median value: **0.62s** per query  
+
+**DB11LITE**, creating index: 1m 49.92s  
+Total time: 11m 57.38s (717.38s) per 1000 queries, Average value: **0.72s**, Median value: **0.71s** per query  
+
+### PC (Cygwin under Windows XP SP3)
+
+* CPU: Intel(R) Pentium(R) 4 CPU 3.00GHz, 2060.28 BogoMIPS
+* 3 Gb RAM.
+
+**DB1LITE**, creating index: 0m 4.57s  
+Total time: 27m 55.76s (1675.76s) per 1000 queries, Average value: **1.68s**, Median value: **1.45s** per query  
+
+**DB3LITE**, creating index: 2m 22.34s  
+Total time: 5h 52m 54.88s (21174.88s) per 628 queries, Average value: **33.72s**, Median value: **37.00s** per query  
+^C  
+*OK, enough. Cygwin is a pain.*
 
 *...to be filled further*
 
@@ -147,4 +182,4 @@ Any mentions, suggestions, pull-requests, bug reports, usage reports etc. are we
 https://facebook.com/Ip2loclean  
 https://vk.com/ip2loc_lean
 
-Last update: 09.07.2016
+Last update: 10.07.2016
