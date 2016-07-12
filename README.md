@@ -138,7 +138,7 @@ Total time: 2m 38.98s (158.98s) per 1000 queries, Average value: **0.16s**, Medi
 **DB11LITE**, creating index: 2m 3.62s  
 Total time: 2m 51.69s (171.69s) per 1000 queries, Average value: **0.17s**, Median value: **0.16s** per query  
 
-* <a name="bench-fastest"></a> PC (Puppy Linux boot from USB stick)
+### <a name="bench-fastest"></a> PC (Puppy Linux boot from USB stick)
 * CPU: Intel(R) Pentium(R) 4 CPU 3.00Ghz, 5985.22 BogoMIPS
 * 4Gb RAM.
 
