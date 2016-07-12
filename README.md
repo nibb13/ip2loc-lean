@@ -1,11 +1,12 @@
 # ip2loc-lean
+
 POSIX-compliant shell implementation of [ip2location lite](https://lite.ip2location.com) database search.
 
 ## Features
 
 * Portable.
 * As lean as possible (no database engine required, works directly on CSV file downloaded from https://lite.ip2location.com).
-* Fast (see benchmark results).
+* Fast (see [benchmark results](#benchmarks)).
 * Smart. Tries different approaches prior to giving up.
 * Agile. Supports different DB's (from DB1LITE to DB11LITE) and configurable output fields.
 * IPv4 (done) and IPv6 (to be done) support.
@@ -89,11 +90,13 @@ csv - fields delimited by , and embraced by "
 
 * More data precision = more storage space & more computing time. So, if you need only country by IP - don't use anything more than DB1LITE. Keep it as lean as possible, as do I.
 
-* Output is not parseable because of ambiguent spaces. Will be fixed by using custom delimiter.
+* ~~Output is not parseable because of ambiguent spaces. Will be fixed by using custom delimiter.~~ Closed in #1.
 
 * This code can do something unexpected. I.e. burn your house, put your `head` under your `tail` or even `fsck` your dog. Don't blame me for that (as stated in LICENSE), just send me a postcard with funny photo of casualty attached.
 
 ## Benchmarks
+
+Spoiler: [Puppy Linux on Pentium 4](#bench-fastest) is fastest so far.
 
 ### D-Link DIR-620 (SOHO router)
 
@@ -134,6 +137,25 @@ Total time: 2m 38.98s (158.98s) per 1000 queries, Average value: **0.16s**, Medi
 
 **DB11LITE**, creating index: 2m 3.62s  
 Total time: 2m 51.69s (171.69s) per 1000 queries, Average value: **0.17s**, Median value: **0.16s** per query  
+
+* <a name="bench-fastest"></a> PC (Puppy Linux boot from USB stick)
+* CPU: Intel(R) Pentium(R) 4 CPU 3.00Ghz, 5985.22 BogoMIPS
+* 4Gb RAM.
+
+**DB1LITE**, creating index: 0m 1.183s  
+Total time: 1m 23.36s (83.36s) per 1000 queries, Average value: **0.08s**, Median value: **0.08s** per query  
+
+**DB3LITE**, creating index: 0m 39.886s  
+Total time: 1m 37.21s (97.21s) per 1000 queries, Average value: **0.10s**, Median value: **0.1s** per query  
+
+**DB5LITE**, creating index: 0m 50.301s  
+Total time: 1m 50.85s (110.85s) per 1000 queries, Average value: **0.11s**, Median value: **0.11s** per query  
+
+**DB9LITE**, creating index: 0m 54.275s  
+Total time: 1m 56.88s (116.88s) per 1000 queries, Average value: **0.12s**, Median value: **0.12s** per query  
+
+**DB11LITE**, creating index: 1m 0.580s  
+Total time: 2m 4.27s (124.27s) per 1000 queries, Average value: **0.12s**, Median value: **0.12s** per query  
 
 ### Just for fun
 
@@ -187,4 +209,4 @@ Any mentions, suggestions, pull-requests, bug reports, usage reports etc. are we
 https://facebook.com/Ip2loclean  
 https://vk.com/ip2loc_lean
 
-Last update: 10.07.2016
+Last update: 12.07.2016
