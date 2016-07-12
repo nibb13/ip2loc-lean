@@ -187,9 +187,15 @@ findDB () {
     if [ "$1" ]; then
 	EXT=$1;
     fi
+
+    FILENAME="$DB_FILE_BASENAME";
+
+    if [ "$2" ]; then
+	FILENAME="$DB6_FILE_BASENAME";
+    fi
     
-    if [ -f "$DATA_DIR/$DB_FILE_BASENAME.$EXT" ]; then
-	$PRINT_N "$DATA_DIR/$DB_FILE_BASENAME.$EXT";
+    if [ -f "$DATA_DIR/$FILENAME.$EXT" ]; then
+	$PRINT_N "$DATA_DIR/$FILENAME.$EXT";
     fi
     
 }
@@ -369,6 +375,7 @@ fi
 . "$CONFIG_FILE";
 
 DB_FILE_BASENAME=$(getDBFile "$CONF_DB_CODE");
+DB6_FILE_BASENAME=$(getDBFile "$CONF_DB6_CODE");
 
 parseOptions "$@";
 shift $((OPTIND-1));
@@ -376,7 +383,18 @@ shift $((OPTIND-1));
 IP_ADDRESS=$1;
 OUT_FORMAT=$2;
 
+# Not sure if this is the best way:
+IS_IPV4=$($PRINT "$IP_ADDRESS" | awk -F "." '{if ($1 < 1 || $1 > 255 || $2 < 0 || $2 > 255 || $3 < 0 || $3 > 255 || $4 < 1 || $4 > 255){exit 0} print "1";}');
+
+# Even worse approach:
+if [ ! "$IS_IPV4" ]; then
+    IS_IPV6="1";
+fi
+
+# TODO: Fix this ^
+
 DB_FILE=$(findDB);
+DB6_FILE=$(findDB "" "1");
 
 if [ ! "$DB_FILE" ]; then
     
@@ -470,9 +488,9 @@ if [ "$INDEX_FILE" ] && [ "$INDEX2_FILE" ]; then
     done
     
     if [ ! "$FIELDS" ]; then
-	FIELDS="\$4";
+	FIELDS=$(prepend "" "\$4");
     fi
     
-    dd if="$DB_FILE" bs=1 skip=$SKIP_BYTES 2>/dev/null | awk -F "\"*,\"*" "{ gsub(/\"/, \"\"); if (\$1 <= $IP_NUMBER && \$2 >= $IP_NUMBER) { print $FIELDS; exit 0;}}";
+    dd if="$DB_FILE" bs=1 skip=$SKIP_BYTES 2>/dev/null | awk -F "\"*,\"*" "{ gsub(/\"\r/, \"\"); if (\$1 <= $IP_NUMBER && \$2 >= $IP_NUMBER) { print $FIELDS; exit 0;}}";
     
 fi

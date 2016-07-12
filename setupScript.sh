@@ -407,7 +407,7 @@ fi
 
 if [ "$CONF_INTERACTIVE_SETUP" ]; then
     while true; do
-	ANSWER=$(prompt_n_read "Which ip2location DB to use?" "DB3LITE");
+	ANSWER=$(prompt_n_read "Which IPv4 ip2location DB to use? (<DB code>, none, list)" "DB3LITE");
 	case $ANSWER in
 	    DB1LITE)
 		CONF_DB_CODE=$ANSWER;
@@ -424,14 +424,62 @@ if [ "$CONF_INTERACTIVE_SETUP" ]; then
 	    DB11LITE)
 		CONF_DB_CODE=$ANSWER;
 		;;
+	    [Nn][Oo][Nn][Ee])
+		;;
+	    [Ll][Ii][Ss][Tt])
+		$PRINT "Available IPv4 bases are:";
+		$PRINT_E "\tDB1LITE - Country only. (~6 Mb)";
+		$PRINT_E "\tDB3LITE - Country, region, city. (~250 Mb)";
+		$PRINT_E "\tDB5LITE - Country, region, city, lat & lon. (~340 Mb)";
+		$PRINT_E "\tDB9LITE - Country, region, city, lat & lon, zip/postal code. (~380 Mb)";
+		$PRINT_E "\tDB11LITE - Country, region, city, lat & lon, zip/postal code, timezone w/ DST. (~410 Mb)";
+		$PRINT;
+		continue;
+		;;
+	    *)
+		unset ANSWER;
+	esac
+	test "$ANSWER" && break || out_text 1 "Can't get you, please repeat!\n";
+    done
+    while true; do
+	ANSWER=$(prompt_n_read "Which IPv6 ip2location DB to use? (<DB code>, none, list)" "DB3LITEIPV6");
+	case $ANSWER in
+	    DB1LITEIPV6)
+		CONF_DB6_CODE=$ANSWER;
+		;;
+	    DB3LITEIPV6)
+		CONF_DB6_CODE=$ANSWER;
+		;;
+	    DB5LITEIPV6)
+		CONF_DB6_CODE=$ANSWER;
+		;;
+	    DB9LITEIPV6)
+		CONF_DB6_CODE=$ANSWER;
+		;;
+	    DB11LITEIPV6)
+		CONF_DB6_CODE=$ANSWER;
+		;;
+	    [Nn][Oo][Nn][Ee])
+		;;
+	    [Ll][Ii][Ss][Tt])
+		$PRINT "Available IPv6 bases are:";
+		$PRINT_E "\tDB1LITEIPV6 - Country only. (~X Mb)";
+		$PRINT_E "\tDB3LITEIPV6 - Country, region, city. (~XXX Mb)";
+		$PRINT_E "\tDB5LITEIPV6 - Country, region, city, lat & lon. (~XXX Mb)";
+		$PRINT_E "\tDB9LITEIPV6 - Country, region, city, lat & lon, zip/postal c\ode. (~XXX Mb)";
+		$PRINT_E "\tDB11LITEIPV6 - Country, region, city, lat & lon, zip/postal code, timezone w/ DST. (~XXX Mb)";
+		$PRINT;
+		continue;
+		;;
 	    *)
 		unset ANSWER;
 	esac
 	test "$ANSWER" && break || out_text 1 "Can't get you, please repeat!\n";
     done
 else
-    out_text 2 "Defaulting to DB3LITE.\n";
-    CONF_DB_CODE="DB3LITE";
+    out_text 2 "Defaulting to DB1LITE && DB1LITEIPV6.\n";
+    CONF_DB_CODE="DB1LITE";
+    CONF_DB6_CODE="DB1LITEIPV6";
 fi
 
 if [ "$CONF_HTTP_BACKEND" ]; then
@@ -488,15 +536,19 @@ out_text 2 "Config file is at: $CONFIG_FILE\n";
 out_text 2 "Data dir is at: $CONF_DATA_HOME\n";
 out_text 2 "HTTP backend is $CONF_HTTP_BACKEND.\n";
 
-test "$CONF_CRONTAB_PRESENT" && test "$CONF_HTTP_BACKEND" && test "$CONF_UNZIP_PRESENT" && test "$CONF_DATE_PRESENT" && out_text 2 "Auto-update prerequisites are met " || out_text 2 "Auto-update prerequisites are not met, auto-update is disabled.\n";
-test "$CONF_DB_AUTOUPDATE" && out_text 2 "and auto-update is on.\n" || out_text 2 "but auto-update is off. You can enable it in config at any time.\n";
+test "$CONF_CRONTAB_PRESENT" && test "$CONF_HTTP_BACKEND" && test "$CONF_UNZIP_PRESENT" && test "$CONF_DATE_PRESENT" && out_text 2 "Auto-update prerequisites are met" || out_text 2 "Auto-update prerequisites are not met, auto-update is disabled.\n";
+test "$CONF_DB_AUTOUPDATE" && out_text 2 " and auto-update is on." || out_text 2 " but auto-update is off. You can enable it in config at any time.";
+test "$CONF_IP2LOC_LOGIN" && test "$CONF_IP2LOC_PASS" && out_text 2 "\n" || out_text 2 " Don't forget to set ip2location login & password in config.\n";
 out_text 2 "Awk backend is $CONF_AWK_BACKEND.\n";
-out_text 2 "IPv4 database to use is $CONF_DB_CODE.";
-test "$CONF_DB_AUTOUPDATE" && out_text 2 "\n" || out_text 2 " But as auto-update is off you need to download, unzip and put it in data dir ($CONF_DATA_HOME) manually.\n";
+test "$CONF_DB_CODE" && out_text 2 "IPv4 database to use is $CONF_DB_CODE." || out_text 2 "No IPv4 database to be used.";
+test "$CONF_DB_AUTOUPDATE" && out_text 2 "\n" || test "$CONF_DB_CODE" && out_text 2 " But as auto-update is off you need to download, unzip and put it in data dir ($CONF_DATA_HOME) manually.\n" || out_text 2 "\n";
+test "$CONF_DB6_CODE" && out_text 2 "IPv6 database to use is $CONF_DB6_CODE." || out_text 2 "No IPv6 database to be used.";
+test "$CONF_DB_AUTOUPDATE" && out_text 2 "\n" || test "$CONF_DB6_CODE" && out_text 2 " But as auto-update is off you need to download, unzip and put it in data dir ($CONF_DATA_HOME) manually.\n" || out_text 2 "\n";
+
 
 if [ "$CONF_VERBOSE_LEVEL" -ge 2 ] && [ "$CONF_IP2LOC_LOGIN" ]; then
 
-    $PRINT "ip2location login is: $CONF_IP2LOC_LOGIN"
+    $PRINT "ip2location login is: $CONF_IP2LOC_LOGIN";
 
     if [ "$CONF_LENGTH_PRESENT" ]; then
 	PASS_LENGTH=$(length "$CONF_IP2LOC_PASS");
@@ -559,13 +611,30 @@ if [ "$CONF_DATE_PRESENT" ]; then
 fi
 
 $PRINT_E "##\n\n" >> "$CONFIG_FILE";
-test "$CONF_HTTP_BACKEND" && $PRINT_E "CONF_HTTP_BACKEND=\"$CONF_HTTP_BACKEND\";" >> "$CONFIG_FILE";
-test "$CONF_AWK_BACKEND" && $PRINT_E "CONF_AWK_BACKEND=\"$CONF_AWK_BACKEND\";" >> "$CONFIG_FILE";
-test "$CONF_GREP_PRESENT" && $PRINT_E "CONF_GREP_PRESENT=\"$CONF_GREP_PRESENT\";" >> "$CONFIG_FILE";
-test "$CONF_DB_CODE" && $PRINT_E "CONF_DB_CODE=\"$CONF_DB_CODE\";" >> "$CONFIG_FILE";
-test "$CONF_DB_AUTOUPDATE" && $PRINT_E "CONF_DB_AUTOUPDATE=\"$CONF_DB_AUTOUPDATE\";" >> "$CONFIG_FILE";
-test "$CONF_IP2LOC_LOGIN" && $PRINT_E "CONF_IP2LOC_LOGIN=\"$CONF_IP2LOC_LOGIN\";" >> "$CONFIG_FILE";
-test "$CONF_IP2LOC_PASS" && $PRINT_E "CONF_IP2LOC_PASS=\"$CONF_IP2LOC_PASS\";" >> "$CONFIG_FILE";
+
+test "$CONF_HTTP_BACKEND" || $PRINT_N "# " >> $CONFIG_FILE;
+$PRINT_E "CONF_HTTP_BACKEND=\"$CONF_HTTP_BACKEND\";" >> "$CONFIG_FILE";
+
+test "$CONF_AWK_BACKEND" || $PRINT_N "# " >> $CONFIG_FILE;
+$PRINT_E "CONF_AWK_BACKEND=\"$CONF_AWK_BACKEND\";" >> "$CONFIG_FILE";
+
+test "$CONF_GREP_PRESENT" || $PRINT_N "# " >> $CONFIG_FILE;
+$PRINT_E "CONF_GREP_PRESENT=\"$CONF_GREP_PRESENT\";" >> "$CONFIG_FILE";
+
+test "$CONF_DB_CODE" || $PRINT_N "# " >> $CONFIG_FILE;
+$PRINT_E "CONF_DB_CODE=\"$CONF_DB_CODE\";" >> "$CONFIG_FILE";
+
+test "$CONF_DB6_CODE" || $PRINT_N "# " >> $CONFIG_FILE;
+$PRINT_E "CONF_DB6_CODE=\"$CONF_DB6_CODE\";" >> "$CONFIG_FILE";
+
+test "$CONF_DB_AUTOUPDATE" || $PRINT_N "# " >> $CONFIG_FILE;
+$PRINT_E "CONF_DB_AUTOUPDATE=\"$CONF_DB_AUTOUPDATE\";" >> "$CONFIG_FILE";
+
+test "$CONF_IP2LOC_LOGIN" || $PRINT_N "# " >> $CONFIG_FILE;
+$PRINT_E "CONF_IP2LOC_LOGIN=\"$CONF_IP2LOC_LOGIN\";" >> "$CONFIG_FILE";
+
+test "$CONF_IP2LOC_PASS" || $PRINT_N "# " >> $CONFIG_FILE;
+$PRINT_E "CONF_IP2LOC_PASS=\"$CONF_IP2LOC_PASS\";" >> "$CONFIG_FILE";
 
 if [ "$CONF_STAT_PRESENT" ]; then
     CONFIG_ACCESS=$(stat -c %a "$CONFIG_FILE");
