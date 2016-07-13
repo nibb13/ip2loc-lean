@@ -9,7 +9,7 @@ POSIX-compliant shell implementation of [ip2location lite](https://lite.ip2locat
 * Fast (see [benchmark results](#benchmarks)).
 * Smart. Tries different approaches prior to giving up.
 * Agile. Supports different DB's (from DB1LITE to DB11LITE) and configurable output fields.
-* IPv4 (done) and IPv6 (to be done) support.
+* IPv4 (done) and IPv6 (in testing) support.
 * Comes with handy setup script.
 
 ## Requirements
@@ -28,6 +28,7 @@ POSIX-compliant shell implementation of [ip2location lite](https://lite.ip2locat
 * awk (awk / gawk / mawk)
 * stat or ls -l
 * dd
+* bc for IPv6 conversions (optional, but increases speed in comparison with built-in awk code)
 
 ### for auto-update feature
 
@@ -57,7 +58,10 @@ ip2loc-lean.sh [-scrClztuh] IP_ADDRESS [OUT_FORMAT]
 
 ### IP_ADDRESS
 
-Currently only valid (no check in script) IPv4 addresses like 8.8.8.8
+* Valid (no check in script) IPv4 addresses like "8.8.8.8"
+* Valid (no check in script) IPv6 addresses like "2404:6800:4001:805::1006" or "::1"
+
+Currently script tries to guess which address is supplied.
 
 ### OUT_FORMAT
 
@@ -84,7 +88,7 @@ csv - fields delimited by , and embraced by "
 
 * Login & password for ip2location database automatic downloads are stored in config as plain text. For now config file should have 600 (-rw---------) access rights when account is stored there for preventing leaks. In future config and account data will be separated.
 
-* IPv6 is currently not supported.
+* IPv6 is currently not ~~supported~~ widely tested.
 
 * Automatic update downloads new zip file, uncompress it, creates new indices and only after all that rewrites previous DB. So, you need 2 * \<selected base CSV size> + \<zip size> free space to make successful auto-updates. And even worse - script doesn't check for space availability at auto-update beginning!
 
@@ -209,4 +213,4 @@ Any mentions, suggestions, pull-requests, bug reports, usage reports etc. are we
 https://facebook.com/Ip2loclean  
 https://vk.com/ip2loc_lean
 
-Last update: 12.07.2016
+Last update: 13.07.2016
