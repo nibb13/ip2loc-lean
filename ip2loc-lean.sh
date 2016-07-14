@@ -389,7 +389,7 @@ setCronjob () {
 	NEW_CRONTAB="$NEW_CRONTAB$CURR_CRONTAB\n";
     fi
     #TODO: get absolute path for ip2loc-lean.sh
-    $PRINT_EN "$NEW_CRONTAB" | crontab;
+    $PRINT_EN "$NEW_CRONTAB" | crontab -;
     
 }
 
