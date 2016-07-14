@@ -94,7 +94,7 @@ csv - fields delimited by , and embraced by "
 
 * More data precision = more storage space & more computing time. So, if you need only country by IP - don't use anything more than DB1LITE. Keep it as lean as possible, as do I.
 
-* ~~Output is not parseable because of ambiguent spaces. Will be fixed by using custom delimiter.~~ Closed in #1.
+* ~~Output is not parseable because of ambiguent spaces. Will be fixed by using custom delimiter.~~ Bug [#1](https://github.com/nibb13/ip2loc-lean/issues/1), closed in [c529b2b](https://github.com/nibb13/ip2loc-lean/commit/c529b2ba9954f3139df785bb08a02c48255a4c92).
 
 * This code can do something unexpected. I.e. burn your house, put your `head` under your `tail` or even `fsck` your dog. Don't blame me for that (as stated in LICENSE), just send me a postcard with funny photo of casualty attached.
 
@@ -213,4 +213,4 @@ Any mentions, suggestions, pull-requests, bug reports, usage reports etc. are we
 https://facebook.com/Ip2loclean  
 https://vk.com/ip2loc_lean
 
-Last update: 13.07.2016
+Last update: 14.07.2016
