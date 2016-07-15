@@ -294,18 +294,14 @@ updateDB () {
 
     ZIP_FILE=$(findDB "ZIP" "$1");
     
-    FILENAME="$DB_FILE_BASENAME.CSV";
-    
-    if [ "$1" ]; then
-	FILENAME="$DB6_FILE_BASENAME.CSV";
-    fi
-
-    if [ "$FILENAME" == ".CSV" ]; then
-	$PRINT_N "No database code set for " >&2;
-	test "$1" && $PRINT "IPv6 in config." >&2 || $PRINT "IPv4 in config." >&2;
+    if [ "$1" ] && [ ! "$DB6_FILE_BASENAME" ] ; then
+	$PRINT_N "No database code set for IPv6 in config" >&2;
+	exit 1;
+    elif [ ! "$1" ] && [ ! "$DB_FILE_BASENAME" ]; then
+	$PRINT_N "No database code set for IPv4 in config" >&2;
 	exit 1;
     fi
-    
+
     if [ ! "$ZIP_FILE" ]; then
 	$PRINT "DB not found. Downloading..." >&2;
 	RESULT=$(downloadDB "$1");
@@ -321,6 +317,15 @@ updateDB () {
     if [ -f "$ZIP_FILE" ]; then
     
 	$PRINT "Got zip file at $ZIP_FILE, unpacking..." >&2;
+	if [ "$CONF_GREP_PRESENT" ]; then
+	    FILENAME=$(unzip -lq "$ZIP_FILE" | grep "\.CSV$");
+	else
+	    if [ "$1" ]; then
+		FILENAME="$DB6_FILE_BASENAME.CSV";
+	    else
+		FILENAME="$DB_FILE_BASENAME.CSV";
+	    fi
+	fi
 	unzip "$ZIP_FILE" "$FILENAME" -d "$DATA_DIR/tmp" >/dev/null 2>&1;
 	EXIT_CODE=0;
 	if [ "$?" -ne 0 ]; then
