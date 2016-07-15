@@ -93,6 +93,7 @@ usage () {
     $PRINT "Usage: $0 [-scrClztuh] IP_ADDRESS [OUT_FORMAT]";
     $PRINT;
     $PRINT "Getting geolocation info for supplied IP address.";
+    $PRINT "v 1.0.0-RC0";
     $PRINT;
     $PRINT "OUT_FORMAT can be:";
     $PRINT_E "\t\tempty (default) - fields delimited by ::";
