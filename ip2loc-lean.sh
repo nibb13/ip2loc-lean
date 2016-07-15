@@ -285,7 +285,7 @@ updateDB () {
 	exit 1;
     fi
 
-    mkdir "$DATA_DIR/tmp";
+    mkdir -p "$DATA_DIR/tmp";
     
     if [ "$?" -ne 0 ]; then
 	$PRINT "Error creating $DATA_DIR/tmp directory. Exiting." >&2;
@@ -298,6 +298,12 @@ updateDB () {
     
     if [ "$1" ]; then
 	FILENAME="$DB6_FILE_BASENAME.CSV";
+    fi
+
+    if [ "$FILENAME" == ".CSV" ]; then
+	$PRINT_N "No database code set for " >&2;
+	test "$1" && $PRINT "IPv6 in config." >&2 || $PRINT "IPv4 in config." >&2;
+	exit 1;
     fi
     
     if [ ! "$ZIP_FILE" ]; then
@@ -322,11 +328,11 @@ updateDB () {
 	    EXIT_CODE=1;
 	fi
 	chmod 644 "$DATA_DIR/tmp/$FILENAME";
-	#rm "$ZIP_FILE";
-	#if [ "$?" -ne 0 ]; then
-	#    $PRINT "Error removing $ZIP_FILE." >&2
-	#    EXIT_CODE=1;
-	#fi
+	rm "$ZIP_FILE";
+	if [ "$?" -ne 0 ]; then
+	    $PRINT "Error removing $ZIP_FILE." >&2
+	    EXIT_CODE=1;
+	fi
 	
 	$PRINT_EN "$ZIP_FILE";
 	exit $EXIT_CODE;
