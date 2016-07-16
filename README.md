@@ -45,6 +45,8 @@ POSIX-compliant shell implementation of [ip2location lite](https://lite.ip2locat
 `chmod +x *.sh`  
 `./setupScript.sh -v`
 
+Don't forget to set ip2location account info in config.
+
 ### Interactive mode
 
 `chmod +x *.sh`  
@@ -213,4 +215,4 @@ Any mentions, suggestions, pull-requests, bug reports, usage reports etc. are we
 https://facebook.com/Ip2loclean  
 https://vk.com/ip2loc_lean
 
-Last update: 14.07.2016
+Last update: 16.07.2016
