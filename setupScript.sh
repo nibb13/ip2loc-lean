@@ -94,6 +94,8 @@ CONF_UNZIP_PRESENT=$(check_cmd unzip);
 CONF_WC_PRESENT=$(check_cmd wc);
 CONF_WGET_PRESENT=$(check_cmd wget);
 
+CONF_READ_S_PRESENT=$(echo "1" | read -s; test $? -eq 0 && echo "1");
+
 # printf is better due to POSIX compliance:
 
 if [ "$CONF_PRINTF_PRESENT" ]; then
@@ -500,18 +502,22 @@ if [ "$CONF_HTTP_BACKEND" ]; then
 	done
 	CONF_IP2LOC_LOGIN=$(prompt_n_read "Enter ip2location account login for DB updates (leave empty to skip)");
 	if [ "$CONF_IP2LOC_LOGIN" ]; then
-	    while true; do
-		IP2LOC_PASS=$(read -sp "Enter ip2location account password (leave empty to skip) : " ANSWER; $PRINT "$ANSWER");
-		$PRINT;
-		if [ ! "$IP2LOC_PASS" ]; then
-		    unset CONF_IP2LOC_LOGIN;
-		    break;
-		fi
-		IP2LOC_PASS_CONFIRM=$(read -sp "Confirm ip2location account password : " ANSWER; $PRINT "$ANSWER");
-		$PRINT;
-		test "$IP2LOC_PASS" = "$IP2LOC_PASS_CONFIRM" && break || out_text 1 "Entered passwords doesn't match!\n";
-	    done;
-	    CONF_IP2LOC_PASS=$IP2LOC_PASS;
+	    if [ "$CONF_READ_S_PRESENT" ]; then
+		while true; do
+		    IP2LOC_PASS=$(read -sp "Enter ip2location account password (leave empty to skip) : " ANSWER; $PRINT "$ANSWER");
+		    $PRINT;
+		    if [ ! "$IP2LOC_PASS" ]; then
+			unset CONF_IP2LOC_LOGIN;
+			break;
+		    fi
+		    IP2LOC_PASS_CONFIRM=$(read -sp "Confirm ip2location account password : " ANSWER; $PRINT "$ANSWER");
+		    $PRINT;
+		    test "$IP2LOC_PASS" = "$IP2LOC_PASS_CONFIRM" && break || out_text 1 "Entered passwords doesn't match!\n";
+		done;
+		CONF_IP2LOC_PASS=$IP2LOC_PASS;
+	    else
+		out_err 2 "No read -s available, please set your password in config later.\n";
+	    fi
 	fi
 	
     else
@@ -541,30 +547,32 @@ test "$CONF_DB_AUTOUPDATE" && out_text 2 " and auto-update is on." || out_text 2
 test "$CONF_IP2LOC_LOGIN" && test "$CONF_IP2LOC_PASS" && out_text 2 "\n" || out_text 2 " Don't forget to set ip2location login & password in config.\n";
 out_text 2 "Awk backend is $CONF_AWK_BACKEND.\n";
 test "$CONF_DB_CODE" && out_text 2 "IPv4 database to use is $CONF_DB_CODE." || out_text 2 "No IPv4 database to be used.";
-test "$CONF_DB_AUTOUPDATE" && out_text 2 "\n" || test "$CONF_DB_CODE" && out_text 2 " But as auto-update is off you need to download, unzip and put it in data dir ($CONF_DATA_HOME) manually.\n" || out_text 2 "\n";
+test "$CONF_DB_AUTOUPDATE" && out_text 2 "\n" || (test "$CONF_DB_CODE" && out_text 2 " But as auto-update is off you need to download, unzip and put it in data dir ($CONF_DATA_HOME) manually.\n") || out_text 2 "\n";
 test "$CONF_DB6_CODE" && out_text 2 "IPv6 database to use is $CONF_DB6_CODE." || out_text 2 "No IPv6 database to be used.";
-test "$CONF_DB_AUTOUPDATE" && out_text 2 "\n" || test "$CONF_DB6_CODE" && out_text 2 " But as auto-update is off you need to download, unzip and put it in data dir ($CONF_DATA_HOME) manually.\n" || out_text 2 "\n";
+test "$CONF_DB_AUTOUPDATE" && out_text 2 "\n" || (test "$CONF_DB6_CODE" && out_text 2 " But as auto-update is off you need to download, unzip and put it in data dir ($CONF_DATA_HOME) manually.\n") || out_text 2 "\n";
 
 
 if [ "$CONF_VERBOSE_LEVEL" -ge 2 ] && [ "$CONF_IP2LOC_LOGIN" ]; then
 
     $PRINT "ip2location login is: $CONF_IP2LOC_LOGIN";
 
-    if [ "$CONF_LENGTH_PRESENT" ]; then
-	PASS_LENGTH=$(length "$CONF_IP2LOC_PASS");
-    elif [ "$CONF_WC_PRESENT" ]; then
-	PASS_LENGTH=$($PRINT_N "$CONF_IP2LOC_PASS" | wc -c);
-    fi
+    if [ "$CONF_IP2LOC_PASS" ]; then
+	if [ "$CONF_LENGTH_PRESENT" ]; then
+	    PASS_LENGTH=$(length "$CONF_IP2LOC_PASS");
+	elif [ "$CONF_WC_PRESENT" ]; then
+	    PASS_LENGTH=$($PRINT_N "$CONF_IP2LOC_PASS" | wc -c);
+	fi
 
-    if [ "$CONF_PRINTF_PRESENT" ]; then
-	if [ "$CONF_SEQ_PRESENT" ]; then
-	    $PRINT_N "ip2location password: ";
-	    printf "*%.0s" $(seq 1 $PASS_LENGTH);
-	    $PRINT;
-	elif [ "$CONF_TR_PRESENT" ]; then
-	    $PRINT_N "ip2location password: ";
-	    printf "%"$PASS_LENGTH"s" | tr " " "*";
-	    $PRINT;
+	if [ "$CONF_PRINTF_PRESENT" ]; then
+	    if [ "$CONF_SEQ_PRESENT" ]; then
+		$PRINT_N "ip2location password: ";
+		printf "*%.0s" $(seq 1 $PASS_LENGTH);
+		$PRINT;
+	    elif [ "$CONF_TR_PRESENT" ]; then
+		$PRINT_N "ip2location password: ";
+		printf "%"$PASS_LENGTH"s" | tr " " "*";
+		$PRINT;
+	    fi
 	fi
     fi
     
