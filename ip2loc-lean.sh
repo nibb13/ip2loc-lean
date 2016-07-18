@@ -93,6 +93,7 @@ usage () {
     $PRINT "Usage: $0 [-scrClztuh] IP_ADDRESS [OUT_FORMAT]";
     $PRINT;
     $PRINT "Getting geolocation info for supplied IP address.";
+    $PRINT "v 1.0.0-RC0";
     $PRINT;
     $PRINT "OUT_FORMAT can be:";
     $PRINT_E "\t\tempty (default) - fields delimited by ::";
@@ -285,7 +286,7 @@ updateDB () {
 	exit 1;
     fi
 
-    mkdir "$DATA_DIR/tmp";
+    mkdir -p "$DATA_DIR/tmp";
     
     if [ "$?" -ne 0 ]; then
 	$PRINT "Error creating $DATA_DIR/tmp directory. Exiting." >&2;
@@ -294,12 +295,14 @@ updateDB () {
 
     ZIP_FILE=$(findDB "ZIP" "$1");
     
-    FILENAME="$DB_FILE_BASENAME.CSV";
-    
-    if [ "$1" ]; then
-	FILENAME="$DB6_FILE_BASENAME.CSV";
+    if [ "$1" ] && [ ! "$DB6_FILE_BASENAME" ] ; then
+	$PRINT_N "No database code set for IPv6 in config" >&2;
+	exit 1;
+    elif [ ! "$1" ] && [ ! "$DB_FILE_BASENAME" ]; then
+	$PRINT_N "No database code set for IPv4 in config" >&2;
+	exit 1;
     fi
-    
+
     if [ ! "$ZIP_FILE" ]; then
 	$PRINT "DB not found. Downloading..." >&2;
 	RESULT=$(downloadDB "$1");
@@ -315,6 +318,15 @@ updateDB () {
     if [ -f "$ZIP_FILE" ]; then
     
 	$PRINT "Got zip file at $ZIP_FILE, unpacking..." >&2;
+	if [ "$CONF_GREP_PRESENT" ]; then
+	    FILENAME=$(unzip -lq "$ZIP_FILE" | grep "\.CSV$");
+	else
+	    if [ "$1" ]; then
+		FILENAME="$DB6_FILE_BASENAME.CSV";
+	    else
+		FILENAME="$DB_FILE_BASENAME.CSV";
+	    fi
+	fi
 	unzip "$ZIP_FILE" "$FILENAME" -d "$DATA_DIR/tmp" >/dev/null 2>&1;
 	EXIT_CODE=0;
 	if [ "$?" -ne 0 ]; then
@@ -322,11 +334,11 @@ updateDB () {
 	    EXIT_CODE=1;
 	fi
 	chmod 644 "$DATA_DIR/tmp/$FILENAME";
-	#rm "$ZIP_FILE";
-	#if [ "$?" -ne 0 ]; then
-	#    $PRINT "Error removing $ZIP_FILE." >&2
-	#    EXIT_CODE=1;
-	#fi
+	rm "$ZIP_FILE";
+	if [ "$?" -ne 0 ]; then
+	    $PRINT "Error removing $ZIP_FILE." >&2
+	    EXIT_CODE=1;
+	fi
 	
 	$PRINT_EN "$ZIP_FILE";
 	exit $EXIT_CODE;

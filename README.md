@@ -2,6 +2,8 @@
 
 POSIX-compliant shell implementation of [ip2location lite](https://lite.ip2location.com) database search.
 
+v 1.0.0-RC0
+
 ## Features
 
 * Portable.
@@ -44,6 +46,8 @@ POSIX-compliant shell implementation of [ip2location lite](https://lite.ip2locat
 
 `chmod +x *.sh`  
 `./setupScript.sh -v`
+
+Don't forget to set ip2location account info in config.
 
 ### Interactive mode
 
@@ -107,6 +111,8 @@ Spoiler: [Puppy Linux on Pentium 4](#pc-puppy-linux-boot-from-usb-stick) is fast
 * CPU: MIPS 74K V4.9, 248.83 BogoMIPS
 * 32 Mb RAM.
 
+**IPv4**
+
 **DB1LITE**, creating index: 0m 15.42s  
 Total time: 4m 28.22s (268.22s) per 1000 queries, Average value: **0.27s**, Median value: **0.27s** per query  
 
@@ -121,6 +127,28 @@ Total time: 5m 35.07s (335.07s) per 1000 queries, Average value: **0.34s**, Medi
 
 **DB11LITE**, creating index: 13m 21.88s  
 Total time: 6m 22.76s (382.76s) per 1000 queries, Average value: **0.38s**, Median value: **0.34s** per query  
+
+**IPv6**
+
+**DB1LITEIPV6**, creating index: 0m 31.44s  
+	(With bc) Total time: 5m 37.44s (337.44s) per 1000 queries, Average value: **0.34s**, Median value: **0.35s** per query  
+	(Without bc) Total time: 8m 42.38s (522.38s) per 1000 queries, Average value: **0.52s**, Median value: **0.46s** per query  
+
+**DB3LITEIPV6**, creating index: 8m 35.45s  
+	(With bc) Total time: 5m 45.71s (345.71s) per 1000 queries, Average value: **0.35s**, Median value: **0.33s** per query  
+	(Without bc) Total time: 9m 46.96s (586.96s) per 1000 queries, Average value: **0.59s**, Median value: **0.50s** per query  
+
+**DB5LITEIPV6**, creating index: 10m 22.65s  
+	(With bc) Total time: 6m 0.73s (360.73s) per 1000 queries, Average value: **0.36s**, Median value: **0.34s** per query  
+	(Without bc) Total time: 9m 20.82s (560.82s) per 1000 queries, Average value: **0.56s**, Median value: **0.49s** per query  
+
+**DB9LITEIPV6**, creating index: 11m 16.40s  
+	(With bc) Total time: 7m 13.09s (433.09s) per 1000 queries, Average value: **0.43s**, Median value: **0.41s** per query  
+	(Without bc) Total time: 13m 36.28s (816.28s) per 1000 queries, Average value: **0.82s**, Median value: **0.70s** per query  
+
+**DB11LITEIPV6**, creating index: 17m 53.45s  
+	(With bc) Total time: 10m 14.88s (614.88s) per 1000 queries, Average value: **0.62s**, Median value: **0.59s** per query  
+	(Without bc) Total time: 14m 24.67s (864.67s) per 1000 queries, Average value: **0.87s**, Median value: **0.73s** per query  
 
 ### Asus Transformer TF101 (Android tablet)
 
@@ -213,4 +241,4 @@ Any mentions, suggestions, pull-requests, bug reports, usage reports etc. are we
 https://facebook.com/Ip2loclean  
 https://vk.com/ip2loc_lean
 
-Last update: 14.07.2016
+Last update: 18.07.2016
