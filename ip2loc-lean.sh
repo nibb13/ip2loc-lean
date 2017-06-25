@@ -40,7 +40,7 @@ parseOptions () {
 		exit 0;
 		;;
 	    u)
-		$(updateDB);
+		$(updateDB >/dev/null);
 		if [ $? -eq 0 ]; then
 		    createIndex 1 1;
 		    createIndex 2 1;
@@ -49,7 +49,7 @@ parseOptions () {
     		    $PRINT "Autoupdate of IPv4 failed." >&2;
 		fi
 		
-		$(updateDB 1);
+		$(updateDB 1 >/dev/null);
 		if [ $? -eq 0 ]; then
 		    createIndex 1 1 1;
 		    createIndex 2 1 1;
