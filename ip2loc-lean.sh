@@ -675,6 +675,6 @@ for (i=1; i<=rLength+pad; i++){
 	FIELDS=$(prepend "" "\$4");
     fi
     
-    dd if="$DB_FILE" bs=1 skip=$SKIP_BYTES 2>/dev/null | awk -F "\"*,\"*" "{ gsub(/\"\r/, \"\"); if (\$1 <= $IP_NUMBER && \$2 >= $IP_NUMBER) { print $FIELDS; exit 0;}}";
+    dd if="$DB_FILE" bs=1 skip=$SKIP_BYTES 2>/dev/null | awk -F "\",\"" "{ gsub(/\"\r/, \"\"); if (\$1 <= $IP_NUMBER && \$2 >= $IP_NUMBER) { print $FIELDS; exit 0;}}";
     
 fi
