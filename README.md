@@ -2,7 +2,7 @@
 
 POSIX-compliant shell implementation of [ip2location lite](https://lite.ip2location.com) database search.
 
-v 1.0.0-RC1
+v 1.0.0
 
 ## Features
 
@@ -241,4 +241,4 @@ Any mentions, suggestions, pull-requests, bug reports, usage reports etc. are we
 https://facebook.com/Ip2loclean  
 https://vk.com/ip2loc_lean
 
-Last update: 25.06.2017
+Last update: 26.08.2017
