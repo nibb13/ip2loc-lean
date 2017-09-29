@@ -2,6 +2,8 @@
 
 init () {
 
+    SCRIPT_VERSION="v 1.0.0"
+
     CONF_SCRIPT_DIR="ip2loc-lean";
 
     if [ ! "$XDG_CONFIG_HOME" ]; then
@@ -93,7 +95,7 @@ usage () {
     $PRINT "Usage: $0 [-scrClztuh] IP_ADDRESS [OUT_FORMAT]";
     $PRINT;
     $PRINT "Getting geolocation info for supplied IP address.";
-    $PRINT "v 1.0.0-RC0";
+    $PRINT "$SCRIPT_VERSION";
     $PRINT;
     $PRINT "OUT_FORMAT can be:";
     $PRINT_E "\t\tempty (default) - fields delimited by ::";
@@ -675,6 +677,6 @@ for (i=1; i<=rLength+pad; i++){
 	FIELDS=$(prepend "" "\$4");
     fi
     
-    dd if="$DB_FILE" bs=1 skip=$SKIP_BYTES 2>/dev/null | awk -F "\"*,\"*" "{ gsub(/\"\r/, \"\"); if (\$1 <= $IP_NUMBER && \$2 >= $IP_NUMBER) { print $FIELDS; exit 0;}}";
+    dd if="$DB_FILE" bs=1 skip=$SKIP_BYTES 2>/dev/null | awk -F "\",\"" "{ gsub(/\"\r/, \"\"); if (\$1 <= $IP_NUMBER && \$2 >= $IP_NUMBER) { print $FIELDS; exit 0;}}";
     
 fi
